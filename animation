@@ -1,4 +1,4 @@
-#/bin/bash -e
+#!/bin/bash -e
 # animation 0.0.1 
 # Copyright (C) 2018 Ryuichi Ueda
 # GPLv3 is applied to this script
