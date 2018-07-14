@@ -1,9 +1,23 @@
-#/bin/bash
+#/bin/bash -e
+
+trap 'rm -f /tmp/*.$$.png' EXIT
+
+usage()
+{
+	echo 'usage: animation [delay]'
+	exit 0
+}
+
+[ "$1" = "-h" ] && usage
+delay="$(tr -dc '0-9' <<< ${1:-50})"
 
 n=0
 while read line ; do
-	convert -font VL-Gothic-Regular -pointsize 20 -background black -fill white "label:$(cat /dev/stdin)" /tmp/$n.$$.png
 	n=$((n + 1))
+	[ "$n" -gt 100 ] && break
+
+	num=$(printf "%03d" "$n")
+	convert -font VL-Gothic-Regular -pointsize 60 -background black -fill white "label:$line" "/tmp/$num.$$.png"
 done
 
-convert /tmp/*.$$.png /images/animation.gif
+convert  -delay "$delay" /tmp/*.$$.png /images/animation.gif
