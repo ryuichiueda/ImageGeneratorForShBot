@@ -1,26 +1,50 @@
 #!/bin/bash -e
-# animation 0.0.1 
+# animation 0.0.2 
 # Copyright (C) 2018 Ryuichi Ueda
 # GPLv3 is applied to this script
 
-trap 'rm -f /tmp/*.$$.png' EXIT
-
 usage()
 {
-	echo 'usage: animation [delay]'
+	echo 'usage: animation [-l <lines>] [-d <delay>]'
 	exit 0
 }
 
+conv(){
+	convert -font VL-Gothic-Regular -pointsize 60 \
+		-background black \
+		-fill white "label:$1" "/tmp/$2.$$.png"
+}
+
+trap 'rm -f /tmp/*.$$.png' EXIT
 [ "$1" = "-h" ] && usage
-delay="$(tr -dc '0-9' <<< ${1:-50})"
+
+while [ "$#" -gt 0 ] ; do
+	[ "$1" = "-d" ] && shift && delay="$(tr -dc '0-9' <<< $1)"
+	[ "$1" = "-l" ] && shift && lines="$(tr -dc '0-9' <<< $1)"
+	shift
+done
+
+delay=${delay:-50}
+lines=${lines:-1}
 
 n=0
+tmp=""
 while read line ; do
 	n=$((n + 1))
 	[ "$n" -gt 100 ] && break
-
 	num=$(printf "%03d" "$n")
-	convert -font VL-Gothic-Regular -pointsize 60 -background black -fill white "label:$line" "/tmp/$num.$$.png"
+
+	if [ "$((n%lines))" -eq 0 ] ; then
+		conv "${out}${line}" "$num"
+		out=""
+	else
+		out="${out}${line}\\n"
+	fi
+	tmp="$out"
 done
+
+### output remaining lines ###
+num=$(printf "%03d" "$n")
+[ -n "$tmp" ] && conv "$tmp" "$num"
 
 convert  -delay "$delay" /tmp/*.$$.png /images/animation.gif
