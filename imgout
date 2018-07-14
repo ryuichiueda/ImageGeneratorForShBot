@@ -1,3 +1,3 @@
 #/bin/bash
 
-convert -font VL-Gothic-Regular -pointsize 20 -background black -fill white "label:$(cat /dev/stdin)" /images/sd.png
+convert -font VL-Gothic-Regular -pointsize 60 -background black -fill white "label:$(cat /dev/stdin)" "/images/tmp.png"
